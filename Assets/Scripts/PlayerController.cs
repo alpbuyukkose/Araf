@@ -4,40 +4,59 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
 
+    [Header("State Machine")]
+    public StateMachine StateMachine { get; private set; }
+    
     private Rigidbody rb;
     private PlayerInputReader inputReader;
     private bool isGrounded;
 
-    private Vector3 movementDir = Vector3.zero;
+    public bool IsGrounded => isGrounded;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         inputReader = GetComponent<PlayerInputReader>();
+        
+        // Initialize StateMachine
+        StateMachine = gameObject.AddComponent<StateMachine>();
+        
+        // Initialize and add all states
+        InitializeStates();
     }
 
-    private void FixedUpdate()
+    private void Start()
     {
-        Vector2 input = inputReader.MoveInput;
-        movementDir = transform.TransformDirection(new Vector3(input.x, 0, input.y));
-        rb.MovePosition(rb.position + movementDir * moveSpeed * Time.fixedDeltaTime);
+        // Start with Idle state
+        StateMachine.ChangeState<IdleState>();
+    }
 
-        if (inputReader.JumpPressed && isGrounded)
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+    private void InitializeStates()
+    {
+        StateMachine.AddState(new IdleState(this));
+        StateMachine.AddState(new WalkingState(this));
+        StateMachine.AddState(new JumpingState(this));
+        StateMachine.AddState(new FallingState(this));
+        StateMachine.AddState(new LandingState(this));
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        isGrounded = true;
+        if (collision.gameObject.CompareTag("Ground") || collision.contacts[0].normal.y > 0.7f)
+        {
+            isGrounded = true;
+        }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground") || collision.contacts[0].normal.y > 0.7f)
+        {
+            isGrounded = false;
+        }
     }
 }
