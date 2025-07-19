@@ -12,6 +12,7 @@ public class RiseState : PlayerBaseState
     {
         base.EnterState();
 
+        //stateMachine.animator.SetBool("isJumping", true);
         Debug.Log("Enter Rise State");
     }
 
@@ -36,6 +37,7 @@ public class RiseState : PlayerBaseState
     {
         base.ExitState();
 
+        //stateMachine.animator.SetBool("isJumping", false);
         Debug.Log("Exit Rise State");
     }
 }

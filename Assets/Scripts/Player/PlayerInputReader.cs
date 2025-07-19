@@ -8,6 +8,7 @@ public class PlayerInputReader : MonoBehaviour
 
     public Vector2 MoveInput { get; private set; }
     public bool JumpPressed { get; private set; }
+    public bool InteractionPressed { get; private set; }
 
     private void Awake()
     {
@@ -18,6 +19,9 @@ public class PlayerInputReader : MonoBehaviour
 
         inputActions.OnFoot.Jump.performed += ctx => JumpPressed = true;
         inputActions.OnFoot.Jump.canceled += ctx => JumpPressed = false;
+
+        inputActions.OnFoot.Interaction.performed += ctx => InteractionPressed = true;
+        inputActions.OnFoot.Interaction.canceled += ctx => InteractionPressed = false;
 
         inputActions.OnFoot.Enable();
     }

@@ -12,13 +12,15 @@ public class MoveState : PlayerBaseState
     {
         base.EnterState();
 
-        // animation
+        //stateMachine.animator.SetBool("isRunning", true);
         Debug.Log("Entered Move State");
     }
 
     public override void Update()
     {
         base.Update();
+
+        stateMachine.TryPickup();
 
         Vector2 input = stateMachine.inputReader.MoveInput;
         //Debug.Log($"MoveState Update - Input magnitude: {input.magnitude}");
@@ -28,6 +30,7 @@ public class MoveState : PlayerBaseState
             //Debug.Log("MoveState: No input, switching to IdleState");
             stateMachine.ChangeState(new IdleState(stateMachine));
         }
+
     }
 
     public override void FixedUpdate()
@@ -46,7 +49,7 @@ public class MoveState : PlayerBaseState
     public override void ExitState()
     {
         base.ExitState();
-
+        //stateMachine.animator.SetBool("isRunning", false);
         Debug.Log("Exiting Move State");
     }
 }

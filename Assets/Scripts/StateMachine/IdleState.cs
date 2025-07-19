@@ -12,13 +12,15 @@ public class IdleState : PlayerBaseState
     {
         base.EnterState();
 
-        // animation
+        //stateMachine.animator.SetBool("isIdle", true);
         Debug.Log("Entered Idle State");
     }
 
     public override void Update()
     {
         base.Update();
+
+        stateMachine.TryPickup();
 
         Vector2 input = stateMachine.inputReader.MoveInput;
         //Debug.Log($"IdleState Update - Input magnitude: {input.magnitude}");
@@ -45,6 +47,7 @@ public class IdleState : PlayerBaseState
     {
         base.ExitState();
 
+        //stateMachine.animator.SetBool("isIdle", false);
         Debug.Log("Exiting Idle State");
     }
 }

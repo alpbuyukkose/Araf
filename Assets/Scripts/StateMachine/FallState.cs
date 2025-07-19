@@ -12,6 +12,7 @@ public class FallState : PlayerBaseState
     {
         base.EnterState();
 
+        //stateMachine.animator.SetBool("isJumping", true);
         Debug.Log("Enter Fall State");
     }
 
@@ -40,6 +41,7 @@ public class FallState : PlayerBaseState
     {
         base.ExitState();
 
+        //stateMachine.animator.SetBool("isJumping", false);
         Debug.Log("Exit Fall State");
     }
 }
