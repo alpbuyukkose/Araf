@@ -22,6 +22,10 @@ public class FallState : PlayerBaseState
 
         if (stateMachine.groundCheck.isGrounded)
         {
+            Vector3 temp = stateMachine.rb.linearVelocity;
+            temp.y = 0f;
+            stateMachine.rb.linearVelocity = temp;
+
             Vector2 input = stateMachine.inputReader.MoveInput;
             if (input.magnitude > 0.1f)
                 stateMachine.ChangeState(new MoveState(stateMachine));

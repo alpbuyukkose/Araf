@@ -10,7 +10,7 @@ public class PlayerInputReader : MonoBehaviour
     public bool JumpPressed { get; private set; }
     public bool InteractionPressed { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
         inputActions = new InputActions();
 
@@ -24,6 +24,15 @@ public class PlayerInputReader : MonoBehaviour
         inputActions.OnFoot.Interaction.canceled += ctx => InteractionPressed = false;
 
         inputActions.OnFoot.Enable();
+    }
+
+    void Update()
+    {
+        if (JumpPressed)
+            Debug.Log("Jump pressed!");
+
+        if (InteractionPressed)
+            Debug.Log("Interact!");
     }
 
     private void OnDestroy()

@@ -10,13 +10,19 @@ public class PlayerStateMachine : MonoBehaviour
 
     [Header("CurrentState")]
     [HideInInspector] public PlayerBaseState CurrentState { get; private set; }
+    [SerializeField] private string currentStateNameDebug;
 
     [Header("Player Settings")]
     public float playerMoveSpeed = 4f;
     public float playerJumpForce = 3f;
 
     [Header("Cam Settings")]
-    [SerializeField] public Transform cameraTransform;
+    public Transform cameraTransform;
+
+    [Header("Jump Control")]
+    public bool jumpLocked { get; private set; } = false;
+    private float jumpCooldown = 0.1f;
+    private float jumpLockTimer = 0f;
 
     private void Awake()
     {
@@ -34,6 +40,8 @@ public class PlayerStateMachine : MonoBehaviour
         {
             CurrentState.Update();
         }
+
+        currentStateNameDebug = CurrentState.name;
     }
 
     private void FixedUpdate()
@@ -44,6 +52,8 @@ public class PlayerStateMachine : MonoBehaviour
         {
             CurrentState.FixedUpdate();
         }
+
+        UpdateJumpLock();
     }
 
     public void ChangeState(PlayerBaseState newState)
@@ -61,6 +71,7 @@ public class PlayerStateMachine : MonoBehaviour
         }
     }
 
+    #region Movement Control
     public void HandleMovement()
     {
         Vector2 input = inputReader.MoveInput;
@@ -68,7 +79,9 @@ public class PlayerStateMachine : MonoBehaviour
         //Debug.Log($"MoveState FixedUpdate - Moving with direction {movementDir}");
         rb.MovePosition(rb.position + movementDir * playerMoveSpeed * Time.fixedDeltaTime);
     }
+    #endregion
 
+    #region Interaction Control
     public void TryPickup()
     {
         if (!inputReader.InteractionPressed)
@@ -92,7 +105,31 @@ public class PlayerStateMachine : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Jump Control
+    public void TryJump()
+    {
+        if (jumpLocked || !inputReader.JumpPressed || !groundCheck.isGrounded)
+            return;
+
+        rb.AddForce(Vector3.up * playerJumpForce, ForceMode.Impulse);
+        jumpLocked = true;
+        jumpLockTimer = jumpCooldown;
+    }
+
+    private void UpdateJumpLock()
+    {
+        if (jumpLocked)
+        {
+            jumpLockTimer -= Time.fixedDeltaTime;
+            if (jumpLockTimer <= 0f)
+                jumpLocked = false;
+        }
+    }
+    #endregion
+
+    #region debug
     private Vector3 debugRayOrigin;
     private Vector3 debugRayDirection;
     private float debugRadius;
@@ -104,4 +141,5 @@ public class PlayerStateMachine : MonoBehaviour
         Gizmos.DrawWireSphere(debugRayOrigin, debugRadius);
         Gizmos.DrawWireSphere(debugRayOrigin + debugRayDirection, debugRadius);
     }
+    #endregion
 }

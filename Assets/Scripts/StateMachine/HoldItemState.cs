@@ -3,10 +3,18 @@
 public class HoldItemState : PlayerBaseState
 {
     private GameObject heldObject;
-    private float holdDistance = 2f;
-    private float holdHeight = 1f;
-
     private Rigidbody heldRigidbody;
+
+    private float holdDistance = 3f;
+    private float holdHeight = .5f;
+
+    private float maxVelocity = 6f;
+    private float maxAngularSpeed = 15f;
+
+    private float originalMass;
+
+    private int originalLayer;
+
 
     public HoldItemState(PlayerStateMachine sm, GameObject obj)
     {
@@ -21,8 +29,16 @@ public class HoldItemState : PlayerBaseState
 
         if (heldObject.TryGetComponent<Rigidbody>(out var rb))
         {
-            rb.isKinematic = true;
+            rb.isKinematic = false;
+            rb.useGravity = false;
+            rb.linearDamping = 8f;
+
             heldRigidbody = rb;
+            originalMass = rb.mass;
+            rb.mass = originalMass * .5f;
+
+            originalLayer = heldObject.layer;
+            heldObject.layer = LayerMask.NameToLayer("HeldObject");
         }
 
         Debug.Log("Entered HoldItemState");
@@ -51,28 +67,53 @@ public class HoldItemState : PlayerBaseState
 
         if (heldObject != null && heldRigidbody != null)
         {
-            Vector3 holdPosition = stateMachine.transform.position
-                                 + stateMachine.cameraTransform.forward * holdDistance
-                                 + Vector3.up * holdHeight;
+            Vector3 target = stateMachine.cameraTransform.position
+               + stateMachine.cameraTransform.forward * holdDistance
+               + stateMachine.cameraTransform.up * holdHeight;
 
-            heldRigidbody.MovePosition(holdPosition);
+            Vector3 toTarget = target - heldRigidbody.position;
+            float distance = toTarget.magnitude;
+
+            // Eğer hedefe çok yaklaştıysa, sabitle (titremeyi engeller)
+            if (distance < 0.01f)
+            {
+                heldRigidbody.linearVelocity = Vector3.zero;
+            }
+            else
+            {
+                float followSpeed = 20f; // burada dengeyi bu ayarlar
+                heldRigidbody.linearVelocity = toTarget.normalized * followSpeed * distance;
+            }
+
+            if (heldRigidbody.angularVelocity.magnitude > maxAngularSpeed)
+            {
+                heldRigidbody.angularVelocity = Vector3.ClampMagnitude(heldRigidbody.angularVelocity, maxAngularSpeed);
+            }
         }
-    }
-
-    private void DropObject()
-    {
-        if (heldObject != null && heldObject.TryGetComponent<Rigidbody>(out var rb))
-        {
-            rb.isKinematic = false;
-        }
-
-        heldObject = null;
-        heldRigidbody = null;
     }
 
     public override void ExitState()
     {
         base.ExitState();
         Debug.Log("Exit HoldItemState");
+    }
+
+    private void DropObject()
+    {
+        if (heldObject != null && heldObject.TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxVelocity);
+            rb.angularVelocity = Vector3.ClampMagnitude(rb.angularVelocity, maxVelocity);
+
+            rb.useGravity = true;
+            rb.linearDamping = 0f;
+            rb.angularDamping = 0f;
+            rb.mass = originalMass;
+
+            heldObject.layer = originalLayer;
+        }
+
+        heldObject = null;
+        heldRigidbody = null;
     }
 }

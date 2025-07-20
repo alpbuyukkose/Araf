@@ -22,6 +22,11 @@ public class IdleState : PlayerBaseState
 
         stateMachine.TryPickup();
 
+        if (stateMachine.rb.linearVelocity.y > 0.1f)
+        {
+            stateMachine.ChangeState(new RiseState(stateMachine));
+        }
+
         Vector2 input = stateMachine.inputReader.MoveInput;
         //Debug.Log($"IdleState Update - Input magnitude: {input.magnitude}");
 
@@ -36,11 +41,7 @@ public class IdleState : PlayerBaseState
     {
         base.FixedUpdate();
 
-        if (stateMachine.inputReader.JumpPressed && stateMachine.groundCheck.isGrounded)
-        {
-            stateMachine.rb.AddForce(Vector3.up * stateMachine.playerJumpForce, ForceMode.Impulse);
-            stateMachine.ChangeState(new RiseState(stateMachine));
-        }
+        stateMachine.TryJump();
     }
 
     public override void ExitState()
