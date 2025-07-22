@@ -11,7 +11,7 @@ public class IdleState : PlayerBaseState
     public override void EnterState()
     {
         base.EnterState();
-
+        stateMachine.inputReader.OnCompassToggle += stateMachine.HandleCompassToggle;
         //stateMachine.animator.SetBool("isIdle", true);
         Debug.Log("Entered Idle State");
     }
@@ -25,6 +25,7 @@ public class IdleState : PlayerBaseState
         if (stateMachine.rb.linearVelocity.y > 0.1f)
         {
             stateMachine.ChangeState(new RiseState(stateMachine));
+            return;
         }
 
         Vector2 input = stateMachine.inputReader.MoveInput;
@@ -47,7 +48,7 @@ public class IdleState : PlayerBaseState
     public override void ExitState()
     {
         base.ExitState();
-
+        stateMachine.inputReader.OnCompassToggle -= stateMachine.HandleCompassToggle;
         //stateMachine.animator.SetBool("isIdle", false);
         Debug.Log("Exiting Idle State");
     }

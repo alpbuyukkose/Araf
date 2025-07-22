@@ -18,6 +18,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     [Header("Cam Settings")]
     public Transform cameraTransform;
+    public GameObject compassPrefab;
 
     [Header("Jump Control")]
     public bool jumpLocked { get; private set; } = false;
@@ -72,12 +73,18 @@ public class PlayerStateMachine : MonoBehaviour
     }
 
     #region Movement Control
+
     public void HandleMovement()
+    {
+        HandleMovement(playerMoveSpeed);
+    }
+
+    public void HandleMovement(float moveSpeed)
     {
         Vector2 input = inputReader.MoveInput;
         Vector3 movementDir = transform.TransformDirection(new Vector3(input.x, 0, input.y));
         //Debug.Log($"MoveState FixedUpdate - Moving with direction {movementDir}");
-        rb.MovePosition(rb.position + movementDir * playerMoveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + movementDir * moveSpeed * Time.fixedDeltaTime);
     }
     #endregion
 
@@ -102,6 +109,7 @@ public class PlayerStateMachine : MonoBehaviour
             if (hit.collider.CompareTag("Pickupable"))
             {
                 ChangeState(new HoldItemState(this, hit.collider.gameObject));
+                return;
             }
         }
     }
@@ -128,6 +136,11 @@ public class PlayerStateMachine : MonoBehaviour
         }
     }
     #endregion
+
+    public void HandleCompassToggle()
+    {
+        ChangeState(new CompassState(this));
+    }
 
     #region debug
     private Vector3 debugRayOrigin;

@@ -9,6 +9,7 @@ public class PlayerInputReader : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool InteractionPressed { get; private set; }
+    public event System.Action OnCompassToggle;
 
     private void Start()
     {
@@ -22,6 +23,8 @@ public class PlayerInputReader : MonoBehaviour
 
         inputActions.OnFoot.Interaction.performed += ctx => InteractionPressed = true;
         inputActions.OnFoot.Interaction.canceled += ctx => InteractionPressed = false;
+
+        inputActions.OnFoot.CompassToggle.performed += ctx => OnCompassToggle?.Invoke();
 
         inputActions.OnFoot.Enable();
     }

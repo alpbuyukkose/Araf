@@ -117,6 +117,15 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CompassToggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""85b0bc8e-2ef0-4eb9-a864-c7b3e69a1dac"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -273,6 +282,28 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Interaction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""12beb12b-488d-407e-974a-3665ca16d3cc"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CompassToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88ef277d-949f-4a1e-a403-82984a9c74a8"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CompassToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -284,6 +315,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_OnFoot_Movement = m_OnFoot.FindAction("Movement", throwIfNotFound: true);
         m_OnFoot_Jump = m_OnFoot.FindAction("Jump", throwIfNotFound: true);
         m_OnFoot_Interaction = m_OnFoot.FindAction("Interaction", throwIfNotFound: true);
+        m_OnFoot_CompassToggle = m_OnFoot.FindAction("CompassToggle", throwIfNotFound: true);
     }
 
     ~@InputActions()
@@ -367,6 +399,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Movement;
     private readonly InputAction m_OnFoot_Jump;
     private readonly InputAction m_OnFoot_Interaction;
+    private readonly InputAction m_OnFoot_CompassToggle;
     /// <summary>
     /// Provides access to input actions defined in input action map "OnFoot".
     /// </summary>
@@ -390,6 +423,10 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OnFoot/Interaction".
         /// </summary>
         public InputAction @Interaction => m_Wrapper.m_OnFoot_Interaction;
+        /// <summary>
+        /// Provides access to the underlying input action "OnFoot/CompassToggle".
+        /// </summary>
+        public InputAction @CompassToggle => m_Wrapper.m_OnFoot_CompassToggle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -425,6 +462,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Interaction.started += instance.OnInteraction;
             @Interaction.performed += instance.OnInteraction;
             @Interaction.canceled += instance.OnInteraction;
+            @CompassToggle.started += instance.OnCompassToggle;
+            @CompassToggle.performed += instance.OnCompassToggle;
+            @CompassToggle.canceled += instance.OnCompassToggle;
         }
 
         /// <summary>
@@ -445,6 +485,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             @Interaction.started -= instance.OnInteraction;
             @Interaction.performed -= instance.OnInteraction;
             @Interaction.canceled -= instance.OnInteraction;
+            @CompassToggle.started -= instance.OnCompassToggle;
+            @CompassToggle.performed -= instance.OnCompassToggle;
+            @CompassToggle.canceled -= instance.OnCompassToggle;
         }
 
         /// <summary>
@@ -506,5 +549,12 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteraction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CompassToggle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCompassToggle(InputAction.CallbackContext context);
     }
 }

@@ -8,7 +8,7 @@ public class HoldItemState : PlayerBaseState
     private float holdDistance = 3f;
     private float holdHeight = .5f;
 
-    private float maxVelocity = 6f;
+    private float maxVelocity = 9f;
     private float maxAngularSpeed = 15f;
 
     private float originalMass;
